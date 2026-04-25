@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+enum Bureau {
+  EXPERIAN
+  EQUIFAX
+  TRANSUNION
+  ALL
+}
+
+enum ItemCategory {
+  COLLECTION
+  LATE_PAYMENT
+  INQUIRY
+  PUBLIC_RECORD
+}
+
+enum DisputeStatus {
+  DRAFT
+  MAILED
+  AWAITING_RESPONSE
+  RESOLVED
+  REJECTED
+}
+
+model User {
+  id                 String             @id @default(uuid())
+  email              String             @unique
+  full_name          String
+  address            String
+  ssn_encrypted      String
+  dob                DateTime
+  subscriptionStatus SubscriptionStatus @default(CANCELED)
+  kyc_verified       Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  reports            CreditReport[]
+  disputes           Dispute[]
+}
+
+model CreditReport {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  bureau    Bureau
+  rawData   Json     // Store encrypted report snapshot
+  pulledAt  DateTime @default(now())
+  items     CreditItem[]
+}
+
+model CreditItem {
+  id                  String       @id @default(uuid())
+  reportId            String
+  report              CreditReport @relation(fields: [reportId], references: [id])
+  accountName         String
+  accountNumberMasked String
+  status              String       // e.g., "Collection"
+  balance             Decimal      @db.Decimal(10, 2)
+  dateReported        DateTime
+  category            ItemCategory
+  isDisputed          Boolean      @default(false)
+  disputes            Dispute[]
+}
+
+model Dispute {
+  id             String        @id @default(uuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  itemId         String
+  item           CreditItem    @relation(fields: [itemId], references: [id])
+  disputeReason  String
+  status         DisputeStatus @default(DRAFT)
+  letterPdfUrl    String?
+  lobId          String?       // Lob tracking ID
+  mailedAt       DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}

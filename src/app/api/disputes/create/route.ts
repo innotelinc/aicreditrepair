@@ -7,17 +7,18 @@ export async function POST(req: Request) {
   try {
     const { itemId, reason } = await req.json();
     
-    // In real prod, use: const { userId } = await auth();
+    // In production, replace with: const { userId } = await auth();
     const userId = 'mock-user-id'; 
     
     const dispute = await createDispute(itemId, reason, userId);
     
     return NextResponse.json({ 
       success: true, 
-      disputeId: dispute.id 
+      disputeId: dispute.id,
+      pdfUrl: dispute.letterPdfUrl
     });
   } catch (error) {
-    console.error('Dispute error:', error);
-    return NextResponse.json({ error: 'Failed to create dispute' }, { status: 500 });
+    console.error('Dispute creation error:', error);
+    return NextResponse.json({ error: 'Failed to create dispute: ' + (error as Error).message }, { status: 500 });
   }
 }

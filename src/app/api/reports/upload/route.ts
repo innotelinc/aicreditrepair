@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { writeFileSync } from 'fs';
-import path from 'path';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to process report' }, { status: 500 });
   }
 }
+
 async function analyzeReport(buffer: Buffer) {
   return {
     bureau: 'All',

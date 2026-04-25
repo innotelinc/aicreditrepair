@@ -8,10 +8,8 @@ export async function POST(req: Request) {
   try {
     const { email, paymentMethodId } = await req.json();
 
-    // 1. Find or create user
     let user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      // In real app, this would be a full sign-up flow
       user = await prisma.user.create({
         data: { 
           email, 
@@ -24,16 +22,16 @@ export async function POST(req: Request) {
       });
     }
 
-    // 2. Create Stripe Subscription
+    const mockCustomerId = 'cus_mock_123456789';
+
     const subscription = await stripe.subscriptions.create({
-      customer: user.stripeCustomerId, // Assume we have this stored
-      items: [{ price: 'price_H123456789' }], // Replace with real Price ID from Stripe
+      customer: mockCustomerId,
+      items: [{ price: 'price_H123456789' }],
       payment_behavior: 'default_incomplete',
       payment_settings: { save_default_payment_method: 'on_subscription' },
       expand: ['latest_invoice.payment_intent'],
     });
 
-    // 3. Update User Status
     await prisma.user.update({
       where: { id: user.id },
       data: { subscriptionStatus: 'ACTIVE' }

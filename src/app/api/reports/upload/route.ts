@@ -21,10 +21,10 @@ export async function POST(req: NextRequest) {
     const report = await prisma.creditReport.create({
       data: {
         userId: 'mock-user-id', // In production, replace with Clerk auth() userId
-        bureau: analysisResults.bureau,
+        bureau: 'ALL',
         rawData: analysisResults as any,
         items: {
-          create: analysisResults.items
+          create: analysisResults
         }
       }
     });

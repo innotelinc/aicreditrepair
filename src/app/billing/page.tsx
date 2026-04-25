@@ -36,8 +36,11 @@ export default function PricingPage() {
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-4">You're All Set!</h1>
           <p className="text-gray-600 mb-10">Your subscription is now active. You can now upload and dispute as many items as you need.</p>
-          <Button asChild className="w-full py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700 rounded-xl">
-            <Link href="/dashboard">Go to Analysis Dashboard</Link>
+          <Button 
+            className="w-full py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700 rounded-xl"
+            onClick={() => window.location.href = '/dashboard'}
+          >
+            Go to Analysis Dashboard
           </Button>
         </Card>
       </div>

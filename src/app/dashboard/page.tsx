@@ -6,13 +6,6 @@ import { Shield, Trash2, FileText, CheckCircle2, ArrowRight, AlertCircle } from 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getAnalysis } from '@/lib/ai-analysis'; // This is a client-side call in our design, so we need a wrapper
-
-async function fetchAnalysis(reportId: string) {
-  const res = await fetch(`/api/analysis?reportId=${reportId}`);
-  if (!res.ok) throw new Error('Failed to fetch analysis');
-  return res.json();
-}
 
 export default function Dashboard() {
   const searchParams = useSearchParams();
@@ -51,7 +44,6 @@ export default function Dashboard() {
       const data = await res.json();
       if (data.success) {
         setDisputeId(data.disputeId);
-        // Update items to mark this one as disputed
         setItems(prev => prev.map(i => i.id === item.id ? { ...i, isDisputed: true } : i));
       }
     } catch (e) {
@@ -77,8 +69,11 @@ export default function Dashboard() {
           <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h1 className="text-xl font-bold text-gray-900 mb-2">No Report Selected</h1>
           <p className="text-gray-600 mb-6">Please upload a report to start the analysis.</p>
-          <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
-            <Link href="/upload">Upload Report Now</Link>
+          <Button 
+            className="w-full bg-blue-600 hover:bg-blue-700" 
+            onClick={() => window.location.href = '/upload'}
+          >
+            Upload Report Now
           </Button>
         </Card>
       </div>
@@ -104,7 +99,6 @@ export default function Dashboard() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Item List */}
           <div className="lg:col-span-2 space-y-4">
             {items.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-2xl border border-gray-200 shadow-sm">
@@ -172,7 +166,6 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Side Panel: Summary & Stats */}
           <div className="space-y-6">
             <Card className="p-6 bg-white shadow-sm rounded-xl border border-gray-100">
               <h2 className="text-lg font-bold text-gray-900 mb-4">Report Summary</h2>
@@ -191,7 +184,6 @@ export default function Dashboard() {
                 </div>
               </div>
             </Card>
-
             <Card className="p-6 bg-blue-600 text-white shadow-lg rounded-xl border-0">
               <h2 className="text-lg font-bold mb-2">Pro Tip</h2>
               <p className="text-blue-100 text-sm leading-relaxed mb-4">

@@ -4,8 +4,7 @@ const isProtectedRoute = createRouteMatcher(['/dashboard(.*)', '/upload(.*)'])
 
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
-    const authObj = await auth();
-    authObj.protect();
+    await auth.protect();
   }
 })
 
